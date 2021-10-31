@@ -1,7 +1,8 @@
 {
   "name": "react-non-conformist-knob",
-  "version": "0.1.0",
-  "private": true,
+  "description": "A react knob component, based on a 3d cone",
+  "main": "./src/ConeKnob.js",
+  "version": "1.0.1",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
