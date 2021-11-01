@@ -5,5 +5,6 @@ I was a bit un-happy with current selection of knobs for one of my projects, and
 one using three.js, for some cooler user experience
 
 ## Usage
-
-<Knob value={} onChange={} min={} max={} >
+```JSX
+<Knob value={} onChange={} min={} max={} color={}/>
+```
