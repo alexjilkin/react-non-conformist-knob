@@ -2,7 +2,6 @@
 import React, {useEffect, useRef} from 'react';
 
 import * as THREE from 'three'
-import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js';
 
 const addLights = (scene, color) => {
     let light = new THREE.DirectionalLight( 0xffffff, 0.40 );
@@ -15,31 +14,81 @@ const addLights = (scene, color) => {
     return [light, hemiLight]
 }
 
-const setControls = (camera, element) => {
-    const controls = new OrbitControls( camera, element );
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.rotateSpeed = 0.4;
-    controls.minPolarAngle = Math.PI / 2;
-    controls.maxPolarAngle = Math.PI / 2;
-    
-    controls.update();
-}
 
 const addCone = (scene, color = 'yellow', width, height) => {
     const geometry = new THREE.ConeGeometry( width / 8, height / 5.4, 9);
     const cone = new THREE.Mesh(geometry, new THREE.MeshPhysicalMaterial( {
         color
     }));
+    
     cone.position.set(0, 5, 0)
+
     scene.add(cone);
+
+    return cone;
 }
+
+let initialValue;
 
 const Knob = ({onChange, min = 0, max = 1, value = 1, color, title = '', width = 150, height = 150, radialSegments = 8}) => {
     const ref = useRef()
+    
+    let mouseDown = false,
+        mouseX = 0,
+        mouseY = 0,
+        cone
+
+    function onMouseMove(evt) {
+        if (!mouseDown) {
+            return;
+        }
+
+        evt.preventDefault();
+
+        var deltaX = evt.clientX - mouseX,
+            deltaY = evt.clientY - mouseY;
+            mouseX = evt.clientX;
+            mouseY = evt.clientY;
+            rotateScene(deltaX, 0);
+    }
+
+    function onMouseDown(evt) {
+        evt.preventDefault();
+
+        mouseDown = true;
+        mouseX = evt.clientX;
+        mouseY = evt.clientY;
+    }
+
+    function onMouseUp(evt) {
+        evt.preventDefault();
+
+        mouseDown = false;
+    }
+
+    function addMouseHandler(canvas) {
+        document.addEventListener('mousemove', function(e) {
+            onMouseMove(e);
+        }, false);
+        canvas.addEventListener('mousedown', function(e) {
+            onMouseDown(e);
+        }, false);
+        document.addEventListener('mouseup', function(e) {
+            onMouseUp(e);
+        }, false);
+    }
+
+    function rotateScene(deltaX, deltaY) {
+        cone.rotation.y += deltaX / 100;
+        cone.rotation.x += deltaY / 100;
+        console.log(cone.rotation.y % 1)
+
+        onChange( Math.round((cone.rotation.y % 1) * 10) / 10)
+    }
 
     useEffect(() => {
         const orbitRadius = width / 8.2 ;
+        initialValue = value;
 
         const scene = new THREE.Scene();
         scene.background = null;
@@ -49,61 +98,35 @@ const Knob = ({onChange, min = 0, max = 1, value = 1, color, title = '', width =
         renderer.setSize(width, height);        
 
         const [light1, _] = addLights(scene, color);
-        addCone(scene, color, width, height, radialSegments)
+        cone = addCone(scene, color, width, height, radialSegments)
+        
+        camera.position.y = orbitRadius
 
-        let lastX;
-        let lastY;
-        let lastZ;
-
-        camera.position.x = orbitRadius;
-        camera.position.y = orbitRadius;
-        camera.position.z = orbitRadius;
-
-        const norm = Math.sqrt(2) * orbitRadius;
-        camera.position.y = norm
-        camera.position.z = (((value - min) / max) - 0.5)  * 2 * norm
+        camera.position.z = orbitRadius
+        camera.position.x = 0
 
         ref.current.appendChild( renderer.domElement );
-        
-        setControls(camera, renderer.domElement);
+        // setControls(camera, renderer.domElement);
+        addMouseHandler(ref.current);
 
         function animate() {
-            requestAnimationFrame( animate );
-            const norm = Math.sqrt(Math.pow(camera.position.x, 2) + Math.pow(camera.position.z, 2));
-
-            if (camera.position.x !== lastX) {
-                lastX = camera.position.x;
-            }
-
-            if (camera.position.y !== lastY) {
-                lastY = camera.position.y;
-            }
-
-            if (camera.position.z !== lastZ) {
-                lastZ = camera.position.z;
-                const val = min + (0.5 + camera.position.z / (norm * 2)) * max
-                const rVal = Math.round(val * 10) / 10
-
-                onChange(rVal)
-            }
-            light1.position.copy(camera.position).add(new THREE.Vector3(10, 10, 0))
+            requestAnimationFrame(animate);
+            
             renderer.render(scene, camera);
         }
         animate();
     }, [ref])
 
-    console.log(`solid 2px #${color}`)
     return (
         <div>
             <div style={{width, height, cursor: 'grab'}} ref={ref}>
-
             </div>
-            {title && <div style={{border: `solid 2px #${color.toString(16)}`, borderRadius: 5, textAlign: 'center', padding: 2}}>
+            {title && <div style={{ textAlign: 'center'}}>
                 {title}
             </div>
             }
             <div style={{display: 'flex', justifyContent: 'center'}}>
-                <div style={{borderBottom: `solid 3px #${color.toString(16)}`, borderRadius: 1, textAlign: 'center', padding: 2}}>
+                <div style={{borderTop: `solid 3px ${colorHexToString(color)}`, borderRadius: 1, textAlign: 'center', padding: 5, marginTop: 5}}>
                     {value}
                 </div>
             </div>
@@ -111,5 +134,7 @@ const Knob = ({onChange, min = 0, max = 1, value = 1, color, title = '', width =
         
     )
   }
+
+const colorHexToString = (color) => `#${('00000' + (color | 0).toString(16)).slice(-6)}`
   
 export default Knob
