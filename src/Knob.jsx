@@ -30,7 +30,7 @@ const addCone = (scene, color = 'yellow', width, height) => {
 
 let initialValue;
 
-const Knob = ({onChange, min = 0, max = 1, value = 1, color, title = '', width = 150, height = 150, radialSegments = 8}) => {
+const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width = 150, height = 150, radialSegments = 8}) => {
     const ref = useRef()
     
     let mouseDown = false,
@@ -81,9 +81,11 @@ const Knob = ({onChange, min = 0, max = 1, value = 1, color, title = '', width =
     function rotateScene(deltaX, deltaY) {
         cone.rotation.y += deltaX / 100;
         cone.rotation.x += deltaY / 100;
-        console.log(cone.rotation.y % 1)
+        console.log(cone.rotation.y % Math.PI)
+        const nornalisedRotation = (cone.rotation.y % (2 * Math.PI)) / (2 * Math.PI)
 
-        onChange( Math.round((cone.rotation.y % 1) * 10) / 10)
+        const roundedVal = Math.abs(Math.round(nornalisedRotation * 10) / 10);
+        onChange(((min / max) + roundedVal) * max)
     }
 
     useEffect(() => {
