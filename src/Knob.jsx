@@ -81,11 +81,12 @@ const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width =
     function rotateScene(deltaX, deltaY) {
         cone.rotation.y += deltaX / 100;
         cone.rotation.x += deltaY / 100;
-        console.log(cone.rotation.y % Math.PI)
+        
         const nornalisedRotation = (cone.rotation.y % (2 * Math.PI)) / (2 * Math.PI)
-
+        console.log(nornalisedRotation)
         const roundedVal = Math.abs(Math.round(nornalisedRotation * 10) / 10);
-        onChange(((min / max) + roundedVal) * max)
+        
+        onChange(min + (roundedVal * (max - min)))
     }
 
     useEffect(() => {
