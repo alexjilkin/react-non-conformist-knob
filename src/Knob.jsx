@@ -1,6 +1,6 @@
 
 import React, {useEffect, useRef} from 'react';
-
+import useMouseRotation from './useMouseRotation';
 import * as THREE from 'three'
 
 const addLights = (scene, color) => {
@@ -20,7 +20,7 @@ const addCone = (scene, color = 'yellow', width, height) => {
     const cone = new THREE.Mesh(geometry, new THREE.MeshPhysicalMaterial( {
         color
     }));
-    
+    cone.rotation.x += 1; 
     cone.position.set(0, 5, 0)
 
     scene.add(cone);
@@ -29,68 +29,15 @@ const addCone = (scene, color = 'yellow', width, height) => {
 }
 
 let initialValue;
+const twoPI = 2 * Math.PI
 
 const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width = 150, height = 150, radialSegments = 8}) => {
     const ref = useRef()
-    
-    let mouseDown = false,
-        mouseX = 0,
-        mouseY = 0,
-        cone
-
-    function onMouseMove(evt) {
-        if (!mouseDown) {
-            return;
-        }
-
-        evt.preventDefault();
-
-        var deltaX = evt.clientX - mouseX,
-            deltaY = evt.clientY - mouseY;
-            mouseX = evt.clientX;
-            mouseY = evt.clientY;
-            rotateScene(deltaX, 0);
-    }
-
-    function onMouseDown(evt) {
-        evt.preventDefault();
-
-        mouseDown = true;
-        mouseX = evt.clientX;
-        mouseY = evt.clientY;
-    }
-
-    function onMouseUp(evt) {
-        evt.preventDefault();
-
-        mouseDown = false;
-    }
-
-    function addMouseHandler(canvas) {
-        document.addEventListener('mousemove', function(e) {
-            onMouseMove(e);
-        }, false);
-        canvas.addEventListener('mousedown', function(e) {
-            onMouseDown(e);
-        }, false);
-        document.addEventListener('mouseup', function(e) {
-            onMouseUp(e);
-        }, false);
-    }
-
-    function rotateScene(deltaX, deltaY) {
-        cone.rotation.y += deltaX / 100;
-        cone.rotation.x += deltaY / 100;
-        
-        const nornalisedRotation = (cone.rotation.y % (2 * Math.PI)) / (2 * Math.PI)
-        console.log(nornalisedRotation)
-        const roundedVal = Math.abs(Math.round(nornalisedRotation * 10) / 10);
-        
-        onChange(min + (roundedVal * (max - min)))
-    }
+    const {addRotationHandler} = useMouseRotation(document, min, max);
+    let cone;
 
     useEffect(() => {
-        const orbitRadius = width / 8.2 ;
+        const orbitRadius = width / 8 ;
         initialValue = value;
 
         const scene = new THREE.Scene();
@@ -102,15 +49,11 @@ const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width =
 
         const [light1, _] = addLights(scene, color);
         cone = addCone(scene, color, width, height, radialSegments)
+        cone.rotation.y += ((value / max) % twoPI) * 100
+        camera.position.set(0, orbitRadius, orbitRadius)
         
-        camera.position.y = orbitRadius
-
-        camera.position.z = orbitRadius
-        camera.position.x = 0
-
         ref.current.appendChild( renderer.domElement );
-        // setControls(camera, renderer.domElement);
-        addMouseHandler(ref.current);
+        addRotationHandler(ref.current, handleRotation);
 
         function animate() {
             requestAnimationFrame(animate);
@@ -119,6 +62,16 @@ const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width =
         }
         animate();
     }, [ref])
+
+    const handleRotation = (deltaX, deltaY) => {
+        cone.rotation.y += deltaX / 100;
+        cone.rotation.x += deltaY / 100;
+        
+        const nornalisedRotation = (cone.rotation.y % twoPI) / (twoPI)
+        const roundedVal = Math.abs(Math.round(nornalisedRotation * 10) / 10);
+        
+        onChange(min + (roundedVal * (max - min)))
+    }
 
     return (
         <div>
