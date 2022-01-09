@@ -28,39 +28,45 @@ const addCone = (scene, color = 'yellow', width, height) => {
     return cone;
 }
 
-let initialValue;
+const createScene = (ref, color, orbitRadius, width, height) => {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 );
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
+    addLights(scene, color);
+
+    renderer.setClearColor( 0xffffff, 0 );
+    renderer.setSize(width, height);        
+
+    scene.background = null;
+    camera.position.set(0, orbitRadius, orbitRadius)
+    
+    ref.current.appendChild( renderer.domElement );
+
+    function animate() {
+        requestAnimationFrame(animate);
+        
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    return scene;
+}
+
 const twoPI = 2 * Math.PI
 
 const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width = 150, height = 150, radialSegments = 8}) => {
     const ref = useRef()
     const {addRotationHandler} = useMouseRotation(document, min, max);
+    let scene;
     let cone;
 
     useEffect(() => {
-        const orbitRadius = width / 8 ;
-        initialValue = value;
-
-        const scene = new THREE.Scene();
-        scene.background = null;
-        const camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 );
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
-        renderer.setClearColor( 0xffffff, 0 );
-        renderer.setSize(width, height);        
-
-        const [light1, _] = addLights(scene, color);
+        scene = createScene(ref, color, width / 8, width, height)
         cone = addCone(scene, color, width, height, radialSegments)
         cone.rotation.y += ((value / max) % twoPI) * 100
-        camera.position.set(0, orbitRadius, orbitRadius)
-        
-        ref.current.appendChild( renderer.domElement );
-        addRotationHandler(ref.current, handleRotation);
 
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            renderer.render(scene, camera);
-        }
-        animate();
+        addRotationHandler(ref.current, handleRotation);
     }, [ref])
 
     const handleRotation = (deltaX, deltaY) => {
