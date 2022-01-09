@@ -74,9 +74,11 @@ const Knob = ({onChange, min = 0, max = 1, value = 0, color, title = '', width =
         cone.rotation.x += deltaY / 100;
         
         const nornalisedRotation = (cone.rotation.y % twoPI) / (twoPI)
-        const roundedVal = Math.abs(Math.round(nornalisedRotation * 10) / 10);
+        const val = min + (nornalisedRotation * (max - min))
+
+        const roundedVal = Math.abs(Math.round(val * 10) / 10);
         
-        onChange(min + (roundedVal * (max - min)))
+        onChange(roundedVal)
     }
 
     return (

@@ -2,7 +2,7 @@
   "name": "react-non-conformist-knob",
   "description": "A react knob component, based on a 3d cone",
   "main": "./dist/Knob.js",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "homepage": "https://alexjilkin.github.io/react-non-conformist-knob",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
