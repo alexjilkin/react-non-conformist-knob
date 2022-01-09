@@ -2,7 +2,7 @@
   "name": "react-non-conformist-knob",
   "description": "A react knob component, based on a 3d cone",
   "main": "./dist/Knob.js",
-  "version": "1.0.4",
+  "version": "2.0.1",
   "homepage": "https://alexjilkin.github.io/react-non-conformist-knob",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
@@ -21,7 +21,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "clean": "rimraf dist",
-    "compile": "npm run clean && cross-env NODE_ENV=production babel src/Knob.jsx --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,stories.js,__snapshots__"
+    "compile": "npm run clean && cross-env NODE_ENV=production babel src/Knob.jsx src/useMouseRotation.js --out-dir dist --copy-files --ignore __tests__,spec.js,test.js,stories.js,__snapshots__"
   },
   "eslintConfig": {
     "extends": [
