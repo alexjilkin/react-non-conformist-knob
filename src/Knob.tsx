@@ -3,7 +3,7 @@ import React, {useEffect, useRef} from 'react';
 import useMouseRotation from './useMouseRotation';
 import * as THREE from 'three'
 
-const addLights = (scene, color) => {
+const addLights = (scene: THREE.Scene, color: THREE.Color) => {
     let light = new THREE.DirectionalLight( 0xffffff, 0.40 );
     light.position.set( -90, 400, 0 )
 
@@ -15,7 +15,7 @@ const addLights = (scene, color) => {
 }
 
 
-const addCone = (scene, color = 'yellow', width, height) => {
+const addCone = (scene: Three.Scene, color = 'yellow', width: number, height: number) => {
     const geometry = new THREE.ConeGeometry( width / 8, height / 5.4, 9);
     const cone = new THREE.Mesh(geometry, new THREE.MeshPhysicalMaterial( {
         color
@@ -28,7 +28,7 @@ const addCone = (scene, color = 'yellow', width, height) => {
     return cone;
 }
 
-const createScene = (ref, color, orbitRadius, width, height) => {
+const createScene = (ref: React.Ref, color, orbitRadius, width, height) => {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera( 75, 1, 0.1, 1000 );
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha:true });
