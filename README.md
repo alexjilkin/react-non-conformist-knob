@@ -8,5 +8,22 @@ Demo: https://alexjilkin.github.io/react-non-conformist-knob/
 ## Usage
 
 ```JSX
-<Knob value={} onChange={} min={} max={} color={} title={}/>
+const [value, setValue] = useState(1)
+
+<Knob onChange={setValue} value={value} color={0x00ffff} />
+```
+
+## Types
+```JSX
+type Props = {
+  onChange: (value: number) => void
+  min?: number
+  max?: number
+  value: number
+  color: number
+  title?: string
+  width?: number
+  height?: number
+  radialSegments?: number
+}
 ```

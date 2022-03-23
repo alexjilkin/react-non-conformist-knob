@@ -1,7 +1,8 @@
-import React, {useEffect, useRef} from 'react'
+import * as React from 'react'
 import useMouseRotation from './useMouseRotation'
 import * as THREE from 'three'
 
+const {useEffect, useRef} = React;
 const addLights = (scene: THREE.Scene, color: THREE.Color) => {
   let light = new THREE.DirectionalLight(0xffffff, 0.4)
   light.position.set(-90, 400, 0)
