@@ -2,7 +2,7 @@
   "name": "react-non-conformist-knob",
   "description": "A react knob component, based on a 3d cone",
   "main": "./dist/Knob.js",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "homepage": "https://alexjilkin.github.io/react-non-conformist-knob",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
@@ -13,15 +13,13 @@
     "@types/react": "^17.0.41",
     "@types/react-dom": "^17.0.14",
     "@types/three": "^0.138.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
     "three": "^0.134.0",
-    "typescript": "^4.6.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "typescript": "^4.6.2"
   },
-  "peerDependencies": {
-  
-  },
+  "peerDependencies": {},
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -52,6 +50,7 @@
     "@babel/cli": "^7.16.0",
     "@babel/preset-env": "^7.16.0",
     "@babel/preset-react": "^7.16.0",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "prettier": "^2.6.0"
   }
 }
